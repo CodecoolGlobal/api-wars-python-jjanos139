@@ -146,3 +146,21 @@ INSERT INTO public.residents (name, height, mass, hair_color, skin_color, eye_co
 INSERT INTO public.residents (name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, id, home_planet) VALUES ('Anakin Skywalker', 188, 84, 'blonde', 'fair', 'blue', '41.9BBY', 'male', 11, 'Tatooine');
 INSERT INTO public.residents (name, height, mass, hair_color, skin_color, eye_color, birth_year, gender, id, home_planet) VALUES ('Adi Gallia', 184, 50, 'none', 'dark', 'blue', 'unknown', 'female', 55, 'Coruscant');
 
+create table api_users
+(
+    id       serial
+        constraint api_users_pk
+            primary key,
+    username varchar not null,
+    password varchar not null
+);
+
+alter table api_users
+    owner to postgres;
+
+create unique index api_users_id_uindex
+    on api_users (id);
+
+create unique index api_users_username_uindex
+    on api_users (username);
+
