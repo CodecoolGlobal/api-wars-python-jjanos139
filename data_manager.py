@@ -49,3 +49,10 @@ def add_user(cursor, username, password):
     """
     cursor.execute(query, {'username': f"{username}", 'password': f"{password}"})
 
+
+@connection.connection_handler
+def get_all_people_data(cursor):
+    query = f"""
+    SELECT * FROM residents"""
+    cursor.execute(query)
+    return cursor.fetchall()

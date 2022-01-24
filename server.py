@@ -8,7 +8,8 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 @app.route('/')
 def main():
     planets = data_manager.get_all_planet_data()
-    return render_template('index.html', planets=planets)
+    residents = data_manager.get_all_people_data()
+    return render_template('index.html', planets=planets, residents=residents)
 
 
 @app.route('/registration', methods=['GET', 'POST'])
@@ -25,7 +26,8 @@ def registration():
             return render_template('registration.html', message="Username already exists, please choose another one!")
         data_manager.add_user(username, hashed_password)
         planets = data_manager.get_all_planet_data()
-        return render_template('index.html', planets=planets, message="Successful registration. Log in to continue.")
+        residents = data_manager.get_all_people_data()
+        return render_template('index.html', planets=planets, residents=residents, message="Successful registration. Log in to continue.")
     return render_template('registration.html')
 
 

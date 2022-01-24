@@ -90,38 +90,31 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <h1>Star Wars univers planets</h1>
-                    <button type="button" class="btn btn-primary">Previous</button>
-                    <button type="button" class="btn btn-primary">Next</button>
+                    {% for resident in residents %}
+                    <h1>Residents of {{ resident.home_planet }}</h1>
                     <table class="table">
                         <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Diameter</th>
-                            <th>Climate</th>
-                            <th>Terrain</th>
-                            <th>Surface Water Percentage</th>
-                            <th>Population</th>
-                            <th>Residents</th>
-                            <th>Vote</th>
+                            <th>Height</th>
+                            <th>Mass</th>
+                            <th>Hair Color</th>
+                            <th>Skin Color</th>
+                            <th>Eye Color</th>
+                            <th>Birth Year</th>
+                            <th>Gender</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {% for planet in planets %}
                         <tr class="table-light">
-                            <th scope="row">{{ planet.name }}</th>
-                            <td>{{ planet.diameter }} km</td>
-                            <td>{{ planet.climate }}</td>
-                            <td>{{ planet.terrain }}</td>
-                            <td>{% if planet.surface_water == 0 %}unknown{% else %}{{ planet.surface_water }}%{%
-                                endif%}
-                            </td>
-                            <td>{% if planet.population == 0 %}unknown{% else %}{{ "{:,}".format(planet.population) }}
-                                people{%
-                                endif%}
-                            </td>
-                            <td></td>
-                            <td></td>
+                            <th scope="row">{{ resident.name }}</th>
+                            <td>{{ resident.height }} km</td>
+                            <td>{{ resident.mass }}</td>
+                            <td>{{ resident.hair_color }}</td>
+                            <td>{{ resident.skin_color }}</td>
+                            <td>{{ resident.eye_color }}</td>
+                            <td>{{ resident.birth_year }}</td>
+                            <td>{{ resident.gender }}</td>
                         </tr>
                         {% endfor %}
                         </tbody>
