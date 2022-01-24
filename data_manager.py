@@ -5,7 +5,12 @@ import bcrypt
 @connection.connection_handler
 def get_all_planet_data(cursor):
     query = """
-    SELECT * FROM sw_planets
+    SELECT sw_planets.name, sw_planets.diameter,
+    sw_planets.climate, sw_planets.terrain,
+    sw_planets.surface_water, sw_planets.population,
+    COUNT(r.home_planet) AS residents FROM sw_planets
+    LEFT JOIN residents r on sw_planets.name = r.home_planet
+    GROUP BY sw_planets.name, sw_planets.diameter, sw_planets.climate, sw_planets.terrain, sw_planets.surface_water, sw_planets.population
     """
     cursor.execute(query)
     return cursor.fetchall()
