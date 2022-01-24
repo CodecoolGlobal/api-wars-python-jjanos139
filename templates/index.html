@@ -31,7 +31,7 @@
                 {% endif %}
             </ul>
             {% if session['username'] %}
-                <h6>Signed in as {{ session['username'] }}</h6>
+            <h6>Signed in as {{ session['username'] }}</h6>
             {% endif %}
         </div>
     </div>
@@ -73,10 +73,10 @@
         {% endfor %}
         </tbody>
     </table>
-<!--    &lt;!&ndash; Button trigger modal &ndash;&gt;-->
-<!--    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">-->
-<!--        Launch demo modal-->
-<!--    </button>-->
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" onclick="('#myModal').modal('toggle')">
+            Launch demo modal
+        </button>
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -90,7 +90,42 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <h1>Star Wars univers planets</h1>
+                    <button type="button" class="btn btn-primary">Previous</button>
+                    <button type="button" class="btn btn-primary">Next</button>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Diameter</th>
+                            <th>Climate</th>
+                            <th>Terrain</th>
+                            <th>Surface Water Percentage</th>
+                            <th>Population</th>
+                            <th>Residents</th>
+                            <th>Vote</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for planet in planets %}
+                        <tr class="table-light">
+                            <th scope="row">{{ planet.name }}</th>
+                            <td>{{ planet.diameter }} km</td>
+                            <td>{{ planet.climate }}</td>
+                            <td>{{ planet.terrain }}</td>
+                            <td>{% if planet.surface_water == 0 %}unknown{% else %}{{ planet.surface_water }}%{%
+                                endif%}
+                            </td>
+                            <td>{% if planet.population == 0 %}unknown{% else %}{{ "{:,}".format(planet.population) }}
+                                people{%
+                                endif%}
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

@@ -1,6 +1,5 @@
 from flask import Flask, session, redirect, url_for, escape, request, render_template, flash
 import data_manager
-import time
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -17,16 +16,14 @@ def registration():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        hashed_password = data_manager.hash_password(password)
         users = data_manager.get_users()
         usernames = []
         for user in users:
             usernames.append(user['username'])
         if username in usernames:
             return render_template('registration.html', message="Username already exists, please choose another one!")
-        data_manager.add_user(username, password)
-        # hashed_password = data_manager.hash_password(password)
-        # user_id = data_manager.add_user(username, hashed_password)
-        # user = data_manager.get_user(user_id)
+        data_manager.add_user(username, hashed_password)
         planets = data_manager.get_all_planet_data()
         return render_template('index.html', planets=planets, message="Successful registration. Log in to continue.")
     return render_template('registration.html')
@@ -41,9 +38,9 @@ def login():
         usernames = []
         for user in users:
             usernames.append(user['username'])
-        if username in usernames and password == data_manager.get_password(username)['password']:
-            # hashed_password = data_manager.get_password(session['username'])['password']
-            # if data_manager.verify_password(password, hashed_password):
+        hashed_password = data_manager.get_password(username)['password']
+        is_matching = data_manager.verify_password(password, hashed_password)
+        if username in usernames and is_matching:
             session['username'] = username
             session['password'] = password
             return redirect(url_for('main'))
