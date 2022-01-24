@@ -1,5 +1,6 @@
 from flask import Flask, session, redirect, url_for, escape, request, render_template, flash
 import data_manager
+import time
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -21,12 +22,13 @@ def registration():
         for user in users:
             usernames.append(user['username'])
         if username in usernames:
-            return render_template('registration.html', message="Username already in use")
+            return render_template('registration.html', message="Username already exists, please choose another one!")
         data_manager.add_user(username, password)
         # hashed_password = data_manager.hash_password(password)
         # user_id = data_manager.add_user(username, hashed_password)
         # user = data_manager.get_user(user_id)
-        return redirect(url_for('main'))
+        planets = data_manager.get_all_planet_data()
+        return render_template('index.html', planets=planets, message="Successful registration. Log in to continue.")
     return render_template('registration.html')
 
 
@@ -46,7 +48,7 @@ def login():
             session['password'] = password
             return redirect(url_for('main'))
         else:
-            return render_template('login.html', message='Invalid password or email!')
+            return render_template('login.html', message=' Wrong username or password')
     return render_template('login.html')
 
 

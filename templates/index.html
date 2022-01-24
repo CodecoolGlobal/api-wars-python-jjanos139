@@ -36,6 +36,9 @@
         </div>
     </div>
 </nav>
+{% if message %}
+<div class="d-flex justify-content-center alert alert-warning" role="alert">{{ message }}</div>
+{% endif %}
 <div class="container">
     <h1>Star Wars univers planets</h1>
     <button type="button" class="btn btn-primary">Previous</button>
