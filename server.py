@@ -7,12 +7,9 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 @app.route('/')
 def main():
-    first_planet = 1
-    last_planet = 5
     planets = data_manager.get_all_planet_data()
     residents = data_manager.get_all_people_data()
-    return render_template('index.html', planets=planets, residents=residents, first_planet=first_planet,
-                           last_planet=last_planet)
+    return render_template('index.html', planets=planets, residents=residents)
 
 
 @app.route('/registration', methods=['GET', 'POST'])
