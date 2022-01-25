@@ -157,7 +157,7 @@ fetchAtomRepository().then((responseData) => {
         if (responseData.results[i].population === 'unknown') {
             newPlanetPopulation.innerHTML = responseData.results[i].population
         } else {
-            newPlanetPopulation.innerHTML = responseData.results[i].population + ' people'
+            newPlanetPopulation.innerHTML = parseInt(responseData.results[i].population).toLocaleString() + ' people'
         }
         let newPlanetResidents = document.createElement('td')
         let newPlanetResidentsButton = document.createElement('button')
