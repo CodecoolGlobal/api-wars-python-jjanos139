@@ -62,27 +62,14 @@
             <th>Vote</th>
         </tr>
         </thead>
-        <tbody>
-        {% for planet in planets %}
-        <tr class="table-light">
-            <th scope="row">{{ planet.name }}</th>
-            <td>{{ planet.diameter }} km</td>
-            <td>{{ planet.climate }}</td>
-            <td>{{ planet.terrain }}</td>
-            <td>{% if planet.surface_water == 0 %}unknown{% else %}{{ planet.surface_water }}%{% endif%}</td>
-            <td>{% if planet.population == 0 %}unknown{% else %}{{ "{:,}".format(planet.population) }} people{%
-                endif%}</td>
-            <td>{% if planet.residents == 0 %}No known residents{% else %}<button type="button" class="btn btn-outline-secondary" href="">{{ planet.residents }} resident(s)</button>{% endif%}</td>
-            <td></td>
-        </tr>
-        {% endfor %}
+        <tbody id="planet-body">
+
         </tbody>
     </table>
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
         Show all characters
     </button>
-
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
@@ -97,7 +84,7 @@
                 <div class="modal-body">
                     <table class="table">
                         <tr>
-                            <th>Name</th>
+                            <th scope="row">Name</th>
                             <th>Height</th>
                             <th>Mass</th>
                             <th>Hair Color</th>
@@ -136,5 +123,71 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
         crossorigin="anonymous"></script>
+<script type="text/javascript">async function fetchAtomRepository() {
+    const response = await fetch('https://swapi.py4e.com/api/planets');
+    return await response.json();
+}
+
+fetchAtomRepository().then((responseData) => {
+    for (let i = 0; i < responseData.results.length; i++) {
+        let newTableRow = document.createElement('tr')
+        let tableBody = document.getElementById('planet-body')
+        tableBody.appendChild(newTableRow)
+        newTableRow.classList.add('table-light')
+        let newPlanetName = document.createElement('td')
+        newTableRow.appendChild(newPlanetName)
+        newPlanetName.innerHTML = responseData.results[i].name
+        let newPlanetDiameter = document.createElement('td')
+        if (responseData.results[i].diameter === 'unknown') {
+            newPlanetDiameter.innerHTML = 'unknown'
+        } else {
+            newPlanetDiameter.innerHTML = responseData.results[i].diameter + ' km'
+        }
+        let newPlanetClimate = document.createElement('td')
+        newPlanetClimate.innerHTML = responseData.results[i].climate
+        let newPlanetTerrain = document.createElement('td')
+        newPlanetTerrain.innerHTML = responseData.results[i].terrain
+        let newPlanetSurfaceWater = document.createElement('td')
+        if (responseData.results[i].surface_water === 'unknown') {
+            newPlanetSurfaceWater.innerHTML = responseData.results[i].surface_water
+        } else {
+            newPlanetSurfaceWater.innerHTML = responseData.results[i].surface_water + '%'
+        }
+        let newPlanetPopulation = document.createElement('td')
+        if (responseData.results[i].population === 'unknown') {
+            newPlanetPopulation.innerHTML = responseData.results[i].population
+        } else {
+            newPlanetPopulation.innerHTML = responseData.results[i].population + ' people'
+        }
+        let newPlanetResidents = document.createElement('td')
+        let newPlanetResidentsButton = document.createElement('button')
+        newPlanetResidentsButton.setAttribute('type', 'button')
+        newPlanetResidentsButton.classList.add('btn')
+        newPlanetResidentsButton.classList.add('btn-info')
+        newPlanetResidentsButton.setAttribute('data-toggle', 'modal')
+        newPlanetResidentsButton.setAttribute('data-target', '#exampleModal')
+        if (responseData.results[i].residents.length === 1) {
+            newPlanetResidentsButton.innerHTML = responseData.results[i].residents.length + ' resident'
+            newPlanetResidents.appendChild(newPlanetResidentsButton)
+        }
+        if (responseData.results[i].residents.length > 1) {
+            newPlanetResidentsButton.innerHTML = responseData.results[i].residents.length + ' residents'
+            newPlanetResidents.appendChild(newPlanetResidentsButton)
+        }
+        if (responseData.results[i].residents.length === 0) {
+            newPlanetResidents.innerHTML = 'No known residents'
+        }
+        console.log(responseData.results[i].residents.length)
+        newTableRow.appendChild(newPlanetName)
+        newTableRow.appendChild(newPlanetDiameter)
+        newTableRow.appendChild(newPlanetClimate)
+        newTableRow.appendChild(newPlanetTerrain)
+        newTableRow.appendChild(newPlanetSurfaceWater)
+        newTableRow.appendChild(newPlanetPopulation)
+        newTableRow.appendChild(newPlanetResidents)
+    }
+})
+;</script>
+
 </body>
 </html>
