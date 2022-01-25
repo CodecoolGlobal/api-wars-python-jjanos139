@@ -63,7 +63,6 @@
         </tr>
         </thead>
         <tbody id="planet-body">
-
         </tbody>
     </table>
     <!-- Button trigger modal -->
@@ -83,6 +82,7 @@
                 </div>
                 <div class="modal-body">
                     <table class="table">
+                        <thead>
                         <tr>
                             <th scope="row">Name</th>
                             <th>Height</th>
@@ -93,18 +93,9 @@
                             <th>Birth Year</th>
                             <th>Gender</th>
                         </tr>
-                        {% for resident in residents %}
-                        <tr class="table-light">
-                            <td>{{ resident.name }}</td>
-                            <td>{{ resident.height }} km</td>
-                            <td>{% if resident.mass == 0 %}unknown{% else %}{{ resident.mass }}{% endif %}</td>
-                            <td>{{ resident.hair_color }}</td>
-                            <td>{{ resident.skin_color }}</td>
-                            <td>{{ resident.eye_color }}</td>
-                            <td>{{ resident.birth_year }}</td>
-                            <td>{{ resident.gender }}</td>
-                        </tr>
-                        {% endfor %}
+                        </thead>
+                        <tbody id="people-body">
+                        </tbody>
                     </table>
                 </div>
                 <div class="modal-footer">
@@ -123,12 +114,12 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
         crossorigin="anonymous"></script>
-<script type="text/javascript">async function fetchAtomRepository() {
+<script type="text/javascript">async function fetchPlanetRepository() {
     const response = await fetch('https://swapi.py4e.com/api/planets');
     return await response.json();
 }
 
-fetchAtomRepository().then((responseData) => {
+fetchPlanetRepository().then((responseData) => {
     for (let i = 0; i < responseData.results.length; i++) {
         let newTableRow = document.createElement('tr')
         let tableBody = document.getElementById('planet-body')
@@ -188,6 +179,53 @@ fetchAtomRepository().then((responseData) => {
     }
 })
 ;</script>
+<script type="text/javascript">async function fetchPeopleRepository() {
+    const response = await fetch('https://swapi.py4e.com/api/people');
+    return await response.json();
+}
 
+fetchPeopleRepository().then((responseData) => {
+    for (let i = 0; i < responseData.results.length; i++) {
+        console.log(responseData.results)
+        let newTableRow = document.createElement('tr')
+        let tableBody = document.getElementById('people-body')
+        tableBody.appendChild(newTableRow)
+        newTableRow.classList.add('table-light')
+        let newPersonName = document.createElement('td')
+        newTableRow.appendChild(newPersonName)
+        newPersonName.innerHTML = responseData.results[i].name
+        let newPersonHeight = document.createElement('td')
+        if (responseData.results[i].height === 'unknown') {
+            newPersonHeight.innerHTML = 'unknown'
+        } else {
+            newPersonHeight.innerHTML = responseData.results[i].height
+        }
+        let newPersonMass = document.createElement('td')
+        if (responseData.results[i].height === 'unknown') {
+            newPersonMass.innerHTML = 'unknown'
+        } else {
+            newPersonMass.innerHTML = responseData.results[i].mass
+        }
+        let newPersonHairColor = document.createElement('td')
+        newPersonHairColor.innerHTML = responseData.results[i].hair_color
+        let newPersonSkinColor = document.createElement('td')
+        newPersonSkinColor.innerHTML = responseData.results[i].skin_color
+        let newPersonEyeColor = document.createElement('td')
+        newPersonEyeColor.innerHTML = responseData.results[i].eye_color
+        let newPersonBirthYear = document.createElement('td')
+        newPersonBirthYear.innerHTML = responseData.results[i].birth_year
+        let newPersonGender = document.createElement('td')
+        newPersonGender.innerHTML = responseData.results[i].gender
+        newTableRow.appendChild(newPersonName)
+        newTableRow.appendChild(newPersonHeight)
+        newTableRow.appendChild(newPersonMass)
+        newTableRow.appendChild(newPersonHairColor)
+        newTableRow.appendChild(newPersonSkinColor)
+        newTableRow.appendChild(newPersonEyeColor)
+        newTableRow.appendChild(newPersonBirthYear)
+        newTableRow.appendChild(newPersonGender)
+    }
+})
+;</script>
 </body>
 </html>
