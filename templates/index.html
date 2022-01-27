@@ -44,7 +44,7 @@
 {% if message %}
 <div class="d-flex justify-content-center alert alert-warning" role="alert">{{ message }}</div>
 {% endif %}
-<div class="container">
+<div class="container" style="min-width: 1400px;">
     {% if session['username'] %}
     <h1>Star Wars univers planets</h1>
     <button type="button" class="btn btn-primary" id="previous-button" onclick="previousPage()">Previous</button>
@@ -127,14 +127,13 @@
         if (pageNumber >= 0 && pageNumber <= 5) {
             pageNumber++
             document.getElementById('planet-body').innerHTML = ''
-            doit()
+            initFetch()
             if (pageNumber === 6) {
                 document.getElementById('next-button').classList.add('disabled')
             }
             if (pageNumber === 1) {
                 document.getElementById('previous-button').classList.remove('disabled')
             }
-
         }
     }
 
@@ -142,7 +141,7 @@
         if (pageNumber >= 1 && pageNumber <= 6) {
             pageNumber--
             document.getElementById('planet-body').innerHTML = ''
-            doit()
+            initFetch()
             if (pageNumber === 5) {
                 document.getElementById('next-button').classList.remove('disabled')
             }
@@ -155,161 +154,122 @@
     async function fetchPlanetRepository() {
         const response = await fetch(planetsList[pageNumber])
         return await response.json();
-
-        // Promise.all([
-        //     fetch('https://swapi.py4e.com/api/planets'),
-        //     fetch('https://swapi.py4e.com/api/planets?page=2'),
-        //     fetch('https://swapi.py4e.com/api/planets?page=3'),
-        //     fetch('https://swapi.py4e.com/api/planets?page=4'),
-        //     fetch('https://swapi.py4e.com/api/planets?page=5'),
-        //     fetch('https://swapi.py4e.com/api/planets?page=6'),
-        //     fetch('https://swapi.py4e.com/api/planets?page=7')
-        // ]).then(function (responses) {
-        //     // Get a JSON object from each of the responses
-        //     return Promise.all(responses.map(function (response) {
-        //         return response.json();
-        //     }));
-        // }).then(function (data) {
-        //         // console.log(data)
-        //         let planetsList = []
-        //         for (let i = 0; i < data.length; i++) {
-        //             for (let j = 0; j < data[i].results.length; j++) {
-        //                 planetsList.push(data[i].results[j])
-        //             }
-        //         }
-        //         // console.log(planetsList)
-        //         return planetsList
-        //     }
-        // ).catch(function (error) {
-        //     console.log(error);
-        // });
-        // }
-        // )
     }
 
-    async function fetchPeopleRepository() {
-        const response = await fetch('https://swapi.py4e.com/api/people');
-        return await response.json();
-    }
+    initFetch()
 
-    doit()
-
-
-    function doit() {
+    function initFetch() {
         fetchPlanetRepository().then((responseData) => {
-            let peopleTableHeader = document.getElementById('exampleModalLabel')
-            for (let i = 0; i < responseData.results.length; i++) {
-                console.log(responseData.results[i])
-                peopleTableHeader.innerHTML = 'Residents of ' + responseData.results[i].name // still need to make it unique
-                let newTableRow = document.createElement('tr')
-                let tableBody = document.getElementById('planet-body')
-                tableBody.appendChild(newTableRow)
-                newTableRow.classList.add('table-light')
-                let newPlanetName = document.createElement('td')
-                newTableRow.appendChild(newPlanetName)
-                newPlanetName.innerHTML = responseData.results[i].name
-                let newPlanetDiameter = document.createElement('td')
-                if (responseData.results[i].diameter === 'unknown' || responseData.results[i].diameter === '0') {
-                    newPlanetDiameter.innerHTML = 'unknown'
-                } else {
-                    newPlanetDiameter.innerHTML = responseData.results[i].diameter + ' km'
-                }
-                let newPlanetClimate = document.createElement('td')
-                newPlanetClimate.innerHTML = responseData.results[i].climate
-                let newPlanetTerrain = document.createElement('td')
-                newPlanetTerrain.innerHTML = responseData.results[i].terrain
-                let newPlanetSurfaceWater = document.createElement('td')
-                if (responseData.results[i].surface_water === 'unknown') {
-                    newPlanetSurfaceWater.innerHTML = responseData.results[i].surface_water
-                } else {
-                    newPlanetSurfaceWater.innerHTML = responseData.results[i].surface_water + '%'
-                }
-                let newPlanetPopulation = document.createElement('td')
-                if (responseData.results[i].population === 'unknown') {
-                    newPlanetPopulation.innerHTML = responseData.results[i].population
-                } else {
-                    newPlanetPopulation.innerHTML = parseInt(responseData.results[i].population).toLocaleString() + ' people'
-                }
-                let newPlanetResidents = document.createElement('td')
-                let newPlanetResidentsButton = document.createElement('button')
-                newPlanetResidentsButton.setAttribute('type', 'button')
-                newPlanetResidentsButton.classList.add('btn')
-                newPlanetResidentsButton.classList.add('btn-outline-info')
-                newPlanetResidentsButton.setAttribute('data-toggle', 'modal')
-                newPlanetResidentsButton.setAttribute('data-target', '#exampleModal')
-                if (responseData.results[i].residents.length === 1) {
-                    newPlanetResidentsButton.innerHTML = responseData.results[i].residents.length + ' resident'
-                    newPlanetResidents.appendChild(newPlanetResidentsButton)
-                }
-                if (responseData.results[i].residents.length > 1) {
-                    newPlanetResidentsButton.innerHTML = responseData.results[i].residents.length + ' residents'
-                    newPlanetResidents.appendChild(newPlanetResidentsButton)
-                }
-                if (responseData.results[i].residents.length === 0) {
-                    newPlanetResidents.innerHTML = 'No known residents'
-                }
-                let newPlanetURL = document.createElement('td')
-                newPlanetURL.classList.add = 'new-planet'
-                newPlanetURL.innerHTML = responseData.results[i].url
-                newTableRow.appendChild(newPlanetName)
-                newTableRow.appendChild(newPlanetDiameter)
-                newTableRow.appendChild(newPlanetClimate)
-                newTableRow.appendChild(newPlanetTerrain)
-                newTableRow.appendChild(newPlanetSurfaceWater)
-                newTableRow.appendChild(newPlanetPopulation)
-                newTableRow.appendChild(newPlanetResidents)
-                newTableRow.appendChild(newPlanetURL)
-            }
-            fetchPeopleRepository().then((responseData) => {
+                let peopleResponseData = responseData.results
+                let peopleTableHeader = document.getElementById('exampleModalLabel')
+                for (let i = 0; i < peopleResponseData.length; i++) {
+                    let planetsNewTableRow = document.createElement('tr')
+                    let planetsTableBody = document.getElementById('planet-body')
+                    planetsTableBody.appendChild(planetsNewTableRow)
+                    planetsNewTableRow.classList.add('table-light')
 
-                for (let i = 0; i < responseData.results.length; i++) {
-                    if (1) {
-                        let newTableRow = document.createElement('tr')
-                        let tableBody = document.getElementById('people-body')
-                        tableBody.appendChild(newTableRow)
-                        newTableRow.classList.add('table-light')
-                        let newPersonName = document.createElement('td')
-                        newTableRow.appendChild(newPersonName)
-                        newPersonName.innerHTML = responseData.results[i].name
-                        let newPersonHeight = document.createElement('td')
-                        if (responseData.results[i].height === 'unknown') {
-                            newPersonHeight.innerHTML = 'unknown'
-                        } else {
-                            newPersonHeight.innerHTML = responseData.results[i].height
-                        }
-                        let newPersonMass = document.createElement('td')
-                        if (responseData.results[i].height === 'unknown') {
-                            newPersonMass.innerHTML = 'unknown'
-                        } else {
-                            newPersonMass.innerHTML = responseData.results[i].mass
-                        }
-                        let newPersonHairColor = document.createElement('td')
-                        newPersonHairColor.innerHTML = responseData.results[i].hair_color
-                        let newPersonSkinColor = document.createElement('td')
-                        newPersonSkinColor.innerHTML = responseData.results[i].skin_color
-                        let newPersonEyeColor = document.createElement('td')
-                        newPersonEyeColor.innerHTML = responseData.results[i].eye_color
-                        let newPersonBirthYear = document.createElement('td')
-                        newPersonBirthYear.innerHTML = responseData.results[i].birth_year
-                        let newPersonGender = document.createElement('td')
-                        newPersonGender.innerHTML = responseData.results[i].gender
-                        let newPersonHomeWorld = document.createElement('td')
-                        newPersonHomeWorld.innerHTML = responseData.results[i].homeworld
-                        newTableRow.appendChild(newPersonName)
-                        newTableRow.appendChild(newPersonHeight)
-                        newTableRow.appendChild(newPersonMass)
-                        newTableRow.appendChild(newPersonHairColor)
-                        newTableRow.appendChild(newPersonSkinColor)
-                        newTableRow.appendChild(newPersonEyeColor)
-                        newTableRow.appendChild(newPersonBirthYear)
-                        newTableRow.appendChild(newPersonGender)
-                        newTableRow.appendChild(newPersonHomeWorld)
+                    let newPlanetName = document.createElement('td')
+                    planetsNewTableRow.appendChild(newPlanetName)
+                    newPlanetName.innerHTML = peopleResponseData[i].name
+
+                    let newPlanetDiameter = document.createElement('td')
+                    if (peopleResponseData[i].diameter === 'unknown' || peopleResponseData[i].diameter === '0') {
+                        newPlanetDiameter.innerHTML = 'unknown'
+                    } else {
+                        newPlanetDiameter.innerHTML = peopleResponseData[i].diameter + ' km'
                     }
-                }
-            })
-        })
-    }
 
-    ;</script>
+                    let newPlanetClimate = document.createElement('td')
+                    newPlanetClimate.innerHTML = peopleResponseData[i].climate
+
+                    let newPlanetTerrain = document.createElement('td')
+                    newPlanetTerrain.innerHTML = peopleResponseData[i].terrain
+
+                    let newPlanetSurfaceWater = document.createElement('td')
+                    if (peopleResponseData[i].surface_water === 'unknown') {
+                        newPlanetSurfaceWater.innerHTML = peopleResponseData[i].surface_water
+                    } else {
+                        newPlanetSurfaceWater.innerHTML = peopleResponseData[i].surface_water + '%'
+                    }
+                    let newPlanetPopulation = document.createElement('td')
+                    if (peopleResponseData[i].population === 'unknown') {
+                        newPlanetPopulation.innerHTML = peopleResponseData[i].population
+                    } else {
+                        newPlanetPopulation.innerHTML = parseInt(peopleResponseData[i].population).toLocaleString() + ' people'
+                    }
+
+                    let newPlanetResidents = document.createElement('td')
+                    let newPlanetResidentsButton = document.createElement('button')
+                    newPlanetResidentsButton.setAttribute('type', 'button')
+                    newPlanetResidentsButton.classList.add('btn')
+                    newPlanetResidentsButton.classList.add('btn-outline-info')
+                    newPlanetResidentsButton.setAttribute('data-toggle', 'modal')
+                    newPlanetResidentsButton.setAttribute('data-target', '#exampleModal')
+                    newPlanetResidentsButton.setAttribute('data-residents', JSON.stringify(peopleResponseData[i].residents))
+                    newPlanetResidentsButton.addEventListener('click', async function (event) {
+                        const residentLinks = JSON.parse(event.target.getAttribute('data-residents'))
+                        const tBody = document.querySelector('#people-body')
+                        tBody.innerHTML = ''
+                        const promises = []
+                        for (let residentLink of residentLinks) {
+                            //// without Promise.all
+                            // const residentData = await (await fetch(residentLink)).json()
+                            // tBody.insertAdjacentHTML('beforeend', `
+                            // <tr><td>${residentData.name}</td></tr>
+                            // `)
+                            promises.push(fetch(residentLink))
+                        }
+                        const responses = await Promise.all(promises)
+                        for (let response of responses) {
+                            const residentData = await response.json()
+                            tBody.insertAdjacentHTML('beforeend', `
+                            <tr><td>${residentData.name}</td>
+                            <td>${residentData.height}</td>
+                            <td>${residentData.mass}</td>
+                            <td>${residentData.hair_color}</td>
+                            <td>${residentData.skin_color}</td>
+                            <td>${residentData.eye_color}</td>
+                            <td>${residentData.birth_year}</td>
+                            <td>${residentData.gender}</td>
+                            </tr>
+                            `)
+                        }
+
+                    })
+                    if (peopleResponseData[i].residents.length === 1) {
+                        newPlanetResidentsButton.innerHTML = peopleResponseData[i].residents.length + ' resident'
+                        newPlanetResidents.appendChild(newPlanetResidentsButton)
+                    }
+                    if (peopleResponseData[i].residents.length > 1) {
+                        newPlanetResidentsButton.innerHTML = peopleResponseData[i].residents.length + ' residents'
+                        newPlanetResidents.appendChild(newPlanetResidentsButton)
+                    }
+                    if (peopleResponseData[i].residents.length === 0) {
+                        newPlanetResidents.innerHTML = 'No known residents'
+                    }
+
+                    let newPlanetVote = document.createElement('td')
+                    let newPlanetVoteButton = document.createElement('button')
+                    newPlanetVoteButton.setAttribute('type', 'button')
+                    newPlanetVoteButton.classList.add('btn')
+                    newPlanetVoteButton.classList.add('btn-outline-info')
+                    newPlanetVoteButton.innerHTML = 'Vote'
+
+                    peopleTableHeader.innerHTML = 'Residents of ' + // still need to make it unique
+
+                        planetsNewTableRow.appendChild(newPlanetName)
+                    planetsNewTableRow.appendChild(newPlanetDiameter)
+                    planetsNewTableRow.appendChild(newPlanetClimate)
+                    planetsNewTableRow.appendChild(newPlanetTerrain)
+                    planetsNewTableRow.appendChild(newPlanetSurfaceWater)
+                    planetsNewTableRow.appendChild(newPlanetPopulation)
+                    planetsNewTableRow.appendChild(newPlanetResidents)
+                    newPlanetVote.appendChild(newPlanetVoteButton)
+                    planetsNewTableRow.appendChild(newPlanetVote)
+                }
+            }
+        )
+    }
+</script>
 </body>
 </html>
