@@ -7,9 +7,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 @app.route('/')
 def main():
-    planets = data_manager.get_all_planet_data()
-    residents = data_manager.get_all_people_data()
-    return render_template('index.html', planets=planets, residents=residents)
+    return render_template('index.html')
 
 
 @app.route('/registration', methods=['GET', 'POST'])
@@ -41,12 +39,13 @@ def login():
         usernames = []
         for user in users:
             usernames.append(user['username'])
-        hashed_password = data_manager.get_password(username)['password']
-        is_matching = data_manager.verify_password(password, hashed_password)
-        if username in usernames and is_matching:
-            session['username'] = username
-            session['password'] = password
-            return redirect(url_for('main'))
+        if username in usernames:
+            hashed_password = data_manager.get_password(username)['password']
+            is_matching = data_manager.verify_password(password, hashed_password)
+            if is_matching:
+                session['username'] = username
+                session['password'] = password
+                return redirect(url_for('main'))
         else:
             return render_template('login.html', message=' Wrong username or password')
     return render_template('login.html')
