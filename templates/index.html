@@ -216,9 +216,12 @@
                     newPlanetResidentsButton.setAttribute('data-toggle', 'modal')
                     newPlanetResidentsButton.setAttribute('data-target', '#exampleModal')
                     newPlanetResidentsButton.setAttribute('data-residents', JSON.stringify(peopleResponseData[i].residents))
+                    newPlanetResidentsButton.setAttribute('data-planet', JSON.stringify(peopleResponseData[i].name))
                     newPlanetResidentsButton.addEventListener('click', async function (event) {
                         document.getElementById('people-modal').setAttribute('hidden', 'hidden')
                         document.getElementById('loading-modal').removeAttribute('hidden')
+                        const residentPlanet = JSON.parse(event.target.getAttribute('data-planet'))
+                        peopleTableHeader.innerHTML = 'Residents of ' + residentPlanet
                         const residentLinks = JSON.parse(event.target.getAttribute('data-residents'))
                         const tBody = document.querySelector('#people-body')
                         tBody.innerHTML = ''
@@ -267,8 +270,6 @@
                     newPlanetVoteButton.classList.add('btn')
                     newPlanetVoteButton.classList.add('btn-outline-info')
                     newPlanetVoteButton.innerHTML = 'Vote'
-
-                    peopleTableHeader.innerHTML = 'Residents of ' // still need to make it unique
 
                     document.getElementById('loading-planets').setAttribute('hidden', 'hidden')
                     planetsNewTableRow.appendChild(newPlanetName)
