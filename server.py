@@ -23,10 +23,7 @@ def registration():
         if username in usernames:
             return render_template('registration.html', message="Username already exists, please choose another one!")
         data_manager.add_user(username, hashed_password)
-        planets = data_manager.get_all_planet_data()
-        residents = data_manager.get_all_people_data()
-        return render_template('index.html', planets=planets, residents=residents,
-                               message="Successful registration. Log in to continue.")
+        return render_template('index.html', message="Successful registration.")
     return render_template('registration.html')
 
 
@@ -46,6 +43,8 @@ def login():
                 session['username'] = username
                 session['password'] = password
                 return redirect(url_for('main'))
+            else:
+                return render_template('login.html', message=' Wrong username or password')
         else:
             return render_template('login.html', message=' Wrong username or password')
     return render_template('login.html')
