@@ -50,8 +50,8 @@
     <h1>Star Wars universe planets</h1>
     <button type="button" class="btn btn-primary" id="previous-button" onclick="previousPage()">Previous</button>
     <button type="button" class="btn btn-primary" id="next-button" onclick="nextPage()">Next</button>
-    <div id="loading" hidden="hidden" style="text-align: center">
-        <img id="loading-image" src="/static/images/loading.gif" alt="Loading..."/>
+    <div id="loading-planets" hidden="hidden" style="text-align: center">
+        <img src="/static/images/loading.gif" alt="Loading..."/>
     </div>
     <table id="planets-table" class="table">
         <thead>
@@ -69,13 +69,14 @@
         <tbody id="planet-body">
         </tbody>
     </table>
-
 </div>
-
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div id="loading-modal" hidden="hidden" style="text-align: center">
+        <img src="/static/images/loading.gif" alt="Loading..."/>
+    </div>
+    <div id="people-modal" class="modal-dialog" role="document">
         <div class="modal-content" style="min-width: 1000px; right:50%">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel"></h5>
@@ -133,7 +134,7 @@
             pageNumber++
             document.getElementById('planet-body').innerHTML = ''
             document.getElementById('planets-table').setAttribute('hidden', 'hidden')
-            document.getElementById('loading').removeAttribute('hidden')
+            document.getElementById('loading-planets').removeAttribute('hidden')
             initFetch()
             if (pageNumber === 6) {
                 document.getElementById('next-button').classList.add('disabled')
@@ -149,7 +150,7 @@
             pageNumber--
             document.getElementById('planet-body').innerHTML = ''
             document.getElementById('planets-table').setAttribute('hidden', 'hidden')
-            document.getElementById('loading').removeAttribute('hidden')
+            document.getElementById('loading-planets').removeAttribute('hidden')
             initFetch()
             if (pageNumber === 5) {
                 document.getElementById('next-button').classList.remove('disabled')
@@ -216,6 +217,8 @@
                     newPlanetResidentsButton.setAttribute('data-target', '#exampleModal')
                     newPlanetResidentsButton.setAttribute('data-residents', JSON.stringify(peopleResponseData[i].residents))
                     newPlanetResidentsButton.addEventListener('click', async function (event) {
+                        document.getElementById('people-modal').setAttribute('hidden', 'hidden')
+                        document.getElementById('loading-modal').removeAttribute('hidden')
                         const residentLinks = JSON.parse(event.target.getAttribute('data-residents'))
                         const tBody = document.querySelector('#people-body')
                         tBody.innerHTML = ''
@@ -231,6 +234,8 @@
                         const responses = await Promise.all(promises)
                         for (let response of responses) {
                             const residentData = await response.json()
+                            document.getElementById('loading-modal').setAttribute('hidden', 'hidden')
+                            document.getElementById('people-modal').removeAttribute('hidden')
                             tBody.insertAdjacentHTML('beforeend', `
                             <tr><td>${residentData.name}</td>
                             <td>${residentData.height}</td>
@@ -243,7 +248,6 @@
                             </tr>
                             `)
                         }
-
                     })
                     if (peopleResponseData[i].residents.length === 1) {
                         newPlanetResidentsButton.innerHTML = peopleResponseData[i].residents.length + ' resident'
@@ -266,8 +270,7 @@
 
                     peopleTableHeader.innerHTML = 'Residents of ' // still need to make it unique
 
-                    document.getElementById('loading').setAttribute('hidden', 'hidden')
-
+                    document.getElementById('loading-planets').setAttribute('hidden', 'hidden')
                     planetsNewTableRow.appendChild(newPlanetName)
                     planetsNewTableRow.appendChild(newPlanetDiameter)
                     planetsNewTableRow.appendChild(newPlanetClimate)
