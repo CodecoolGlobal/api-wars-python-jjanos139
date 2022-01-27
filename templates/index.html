@@ -45,7 +45,7 @@
 {% if message %}
 <div class="d-flex justify-content-center alert alert-warning" role="alert">{{ message }}</div>
 {% endif %}
-<div class="container" style="min-width: 1400px;">
+<div id="planet-main" class="container" style="min-width: 1400px;">
     {% if session['username'] %}
     <h1>Star Wars universe planets</h1>
     <button type="button" class="btn btn-primary" id="previous-button" onclick="previousPage()">Previous</button>
@@ -118,6 +118,9 @@
         integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
         crossorigin="anonymous"></script>
 <script type="text/javascript">
+    document.getElementById('previous-button').classList.add('disabled')
+
+    // set planets database urls
     let planets1 = 'https://swapi.py4e.com/api/planets?page=1'
     let planets2 = 'https://swapi.py4e.com/api/planets?page=2'
     let planets3 = 'https://swapi.py4e.com/api/planets?page=3'
@@ -127,15 +130,30 @@
     let planets7 = 'https://swapi.py4e.com/api/planets?page=7'
     let pageNumber = 0
     let planetsList = [planets1, planets2, planets3, planets4, planets5, planets6, planets7]
-    document.getElementById('previous-button').classList.add('disabled')
 
+    // fetch data from url
+    async function fetchPlanetRepository() {
+        const response = await fetch(planetsList[pageNumber])
+        return await response.json();
+    }
+
+    initFetch()
+
+    // loading image sequence after previous/next button press
+    function loadingImage() {
+        document.getElementById('planet-body').innerHTML = ''
+        document.getElementById('previous-button').setAttribute('hidden', 'hidden')
+        document.getElementById('next-button').setAttribute('hidden', 'hidden')
+        document.getElementById('planets-table').setAttribute('hidden', 'hidden')
+        document.getElementById('loading-planets').removeAttribute('hidden')
+        initFetch()
+    }
+
+    // next planet button
     function nextPage() {
         if (pageNumber >= 0 && pageNumber <= 5) {
             pageNumber++
-            document.getElementById('planet-body').innerHTML = ''
-            document.getElementById('planets-table').setAttribute('hidden', 'hidden')
-            document.getElementById('loading-planets').removeAttribute('hidden')
-            initFetch()
+            loadingImage()
             if (pageNumber === 6) {
                 document.getElementById('next-button').classList.add('disabled')
             }
@@ -145,13 +163,11 @@
         }
     }
 
+    // previous planet button
     function previousPage() {
         if (pageNumber >= 1 && pageNumber <= 6) {
             pageNumber--
-            document.getElementById('planet-body').innerHTML = ''
-            document.getElementById('planets-table').setAttribute('hidden', 'hidden')
-            document.getElementById('loading-planets').removeAttribute('hidden')
-            initFetch()
+            loadingImage()
             if (pageNumber === 5) {
                 document.getElementById('next-button').classList.remove('disabled')
             }
@@ -161,53 +177,50 @@
         }
     }
 
-    async function fetchPlanetRepository() {
-        const response = await fetch(planetsList[pageNumber])
-        return await response.json();
-    }
-
-    initFetch()
-
+    // data insert after fetching data from API
     function initFetch() {
         fetchPlanetRepository().then((responseData) => {
+                document.getElementById('loading-planets').setAttribute('hidden', 'hidden')
                 let peopleResponseData = responseData.results
                 let peopleTableHeader = document.getElementById('exampleModalLabel')
                 for (let i = 0; i < peopleResponseData.length; i++) {
-                    let planetsNewTableRow = document.createElement('tr')
                     let planetsTableBody = document.getElementById('planet-body')
+                    // create new row and add to tbody element, add bootstrap to tbody
+                    let planetsNewTableRow = document.createElement('tr')
                     planetsTableBody.appendChild(planetsNewTableRow)
                     planetsNewTableRow.classList.add('table-light')
-
+                    // create name column and add to row
                     let newPlanetName = document.createElement('td')
                     planetsNewTableRow.appendChild(newPlanetName)
                     newPlanetName.innerHTML = peopleResponseData[i].name
-
+                    // create diameter column and add to row
                     let newPlanetDiameter = document.createElement('td')
                     if (peopleResponseData[i].diameter === 'unknown' || peopleResponseData[i].diameter === '0') {
                         newPlanetDiameter.innerHTML = 'unknown'
                     } else {
                         newPlanetDiameter.innerHTML = peopleResponseData[i].diameter + ' km'
                     }
-
+                    // create climate column and add to row
                     let newPlanetClimate = document.createElement('td')
                     newPlanetClimate.innerHTML = peopleResponseData[i].climate
-
+                    // create terrain column and add to row
                     let newPlanetTerrain = document.createElement('td')
                     newPlanetTerrain.innerHTML = peopleResponseData[i].terrain
-
+                    // create surface_water column and add to row
                     let newPlanetSurfaceWater = document.createElement('td')
                     if (peopleResponseData[i].surface_water === 'unknown') {
                         newPlanetSurfaceWater.innerHTML = peopleResponseData[i].surface_water
                     } else {
                         newPlanetSurfaceWater.innerHTML = peopleResponseData[i].surface_water + '%'
                     }
+                    // create population column and add to row
                     let newPlanetPopulation = document.createElement('td')
                     if (peopleResponseData[i].population === 'unknown') {
                         newPlanetPopulation.innerHTML = peopleResponseData[i].population
                     } else {
                         newPlanetPopulation.innerHTML = parseInt(peopleResponseData[i].population).toLocaleString() + ' people'
                     }
-
+                    // create residents column including button to modal table and add to row
                     let newPlanetResidents = document.createElement('td')
                     let newPlanetResidentsButton = document.createElement('button')
                     newPlanetResidentsButton.setAttribute('type', 'button')
@@ -217,11 +230,14 @@
                     newPlanetResidentsButton.setAttribute('data-target', '#exampleModal')
                     newPlanetResidentsButton.setAttribute('data-residents', JSON.stringify(peopleResponseData[i].residents))
                     newPlanetResidentsButton.setAttribute('data-planet', JSON.stringify(peopleResponseData[i].name))
+                    // add click listener to residents button and call modal with features
                     newPlanetResidentsButton.addEventListener('click', async function (event) {
                         document.getElementById('people-modal').setAttribute('hidden', 'hidden')
                         document.getElementById('loading-modal').removeAttribute('hidden')
+                        // add modal table header including current planet name
                         const residentPlanet = JSON.parse(event.target.getAttribute('data-planet'))
                         peopleTableHeader.innerHTML = 'Residents of ' + residentPlanet
+                        // fill modal table with residents' data
                         const residentLinks = JSON.parse(event.target.getAttribute('data-residents'))
                         const tBody = document.querySelector('#people-body')
                         tBody.innerHTML = ''
@@ -237,6 +253,7 @@
                         const responses = await Promise.all(promises)
                         for (let response of responses) {
                             const residentData = await response.json()
+                            // remove loading image and replace it with table
                             document.getElementById('loading-modal').setAttribute('hidden', 'hidden')
                             document.getElementById('people-modal').removeAttribute('hidden')
                             tBody.insertAdjacentHTML('beforeend', `
@@ -263,15 +280,14 @@
                     if (peopleResponseData[i].residents.length === 0) {
                         newPlanetResidents.innerHTML = 'No known residents'
                     }
-
+                    // add planet vote button in the last column
                     let newPlanetVote = document.createElement('td')
                     let newPlanetVoteButton = document.createElement('button')
                     newPlanetVoteButton.setAttribute('type', 'button')
                     newPlanetVoteButton.classList.add('btn')
                     newPlanetVoteButton.classList.add('btn-outline-info')
                     newPlanetVoteButton.innerHTML = 'Vote'
-
-                    document.getElementById('loading-planets').setAttribute('hidden', 'hidden')
+                    // fill table with all newly created data
                     planetsNewTableRow.appendChild(newPlanetName)
                     planetsNewTableRow.appendChild(newPlanetDiameter)
                     planetsNewTableRow.appendChild(newPlanetClimate)
@@ -281,9 +297,12 @@
                     planetsNewTableRow.appendChild(newPlanetResidents)
                     newPlanetVote.appendChild(newPlanetVoteButton)
                     planetsNewTableRow.appendChild(newPlanetVote)
-                    document.getElementById('planets-table').removeAttribute('hidden')
-
                 }
+                // remove loading image and add all table data and buttons
+
+                document.getElementById('previous-button').removeAttribute('hidden')
+                document.getElementById('next-button').removeAttribute('hidden')
+                document.getElementById('planets-table').removeAttribute('hidden')
             }
         )
     }
