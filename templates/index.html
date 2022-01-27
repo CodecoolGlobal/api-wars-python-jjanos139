@@ -17,10 +17,10 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#">Voting Statistics</a>
                 </li>
+                {% if not session['username'] %}
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/registration">Registration</a>
                 </li>
-                {% if not session['username'] %}
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/login">Login</a>
                 </li>
@@ -36,7 +36,8 @@
                 {% endif %}
             </ul>
             {% if session['username'] %}
-            <h6>Signed in as {{ session['username'] }}</h6>
+            <h6 style="color: white; background-color: midnightblue">Signed in as <span style="color: darkorange;">{{ session['username'] }}</span>
+            </h6>
             {% endif %}
         </div>
     </div>
@@ -46,10 +47,13 @@
 {% endif %}
 <div class="container" style="min-width: 1400px;">
     {% if session['username'] %}
-    <h1>Star Wars univers planets</h1>
+    <h1>Star Wars universe planets</h1>
     <button type="button" class="btn btn-primary" id="previous-button" onclick="previousPage()">Previous</button>
     <button type="button" class="btn btn-primary" id="next-button" onclick="nextPage()">Next</button>
-    <table class="table">
+    <div id="loading" hidden="hidden" style="text-align: center">
+        <img id="loading-image" src="/static/images/loading.gif" alt="Loading..."/>
+    </div>
+    <table id="planets-table" class="table">
         <thead>
         <tr>
             <th>Name</th>
@@ -66,45 +70,46 @@
         </tbody>
     </table>
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content" style="min-width: 1000px; right:50%">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th scope="row">Name</th>
-                            <th>Height</th>
-                            <th>Mass</th>
-                            <th>Hair Color</th>
-                            <th>Skin Color</th>
-                            <th>Eye Color</th>
-                            <th>Birth Year</th>
-                            <th>Gender</th>
-                        </tr>
-                        </thead>
-                        <tbody id="people-body">
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="min-width: 1000px; right:50%">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="row">Name</th>
+                        <th>Height</th>
+                        <th>Mass</th>
+                        <th>Hair Color</th>
+                        <th>Skin Color</th>
+                        <th>Eye Color</th>
+                        <th>Birth Year</th>
+                        <th>Gender</th>
+                    </tr>
+                    </thead>
+                    <tbody id="people-body">
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
-    {% else %}
-    <p class="d-flex justify-content-center alert alert-primary">Please log in to see all the data!</p>
-    {% endif %}
 </div>
+{% else %}
+<p class="d-flex justify-content-center alert alert-primary">Please log in to see all the data!</p>
+{% endif %}
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>
@@ -127,6 +132,8 @@
         if (pageNumber >= 0 && pageNumber <= 5) {
             pageNumber++
             document.getElementById('planet-body').innerHTML = ''
+            document.getElementById('planets-table').setAttribute('hidden', 'hidden')
+            document.getElementById('loading').removeAttribute('hidden')
             initFetch()
             if (pageNumber === 6) {
                 document.getElementById('next-button').classList.add('disabled')
@@ -141,6 +148,8 @@
         if (pageNumber >= 1 && pageNumber <= 6) {
             pageNumber--
             document.getElementById('planet-body').innerHTML = ''
+            document.getElementById('planets-table').setAttribute('hidden', 'hidden')
+            document.getElementById('loading').removeAttribute('hidden')
             initFetch()
             if (pageNumber === 5) {
                 document.getElementById('next-button').classList.remove('disabled')
@@ -255,9 +264,11 @@
                     newPlanetVoteButton.classList.add('btn-outline-info')
                     newPlanetVoteButton.innerHTML = 'Vote'
 
-                    peopleTableHeader.innerHTML = 'Residents of ' + // still need to make it unique
+                    peopleTableHeader.innerHTML = 'Residents of ' // still need to make it unique
 
-                        planetsNewTableRow.appendChild(newPlanetName)
+                    document.getElementById('loading').setAttribute('hidden', 'hidden')
+
+                    planetsNewTableRow.appendChild(newPlanetName)
                     planetsNewTableRow.appendChild(newPlanetDiameter)
                     planetsNewTableRow.appendChild(newPlanetClimate)
                     planetsNewTableRow.appendChild(newPlanetTerrain)
@@ -266,6 +277,8 @@
                     planetsNewTableRow.appendChild(newPlanetResidents)
                     newPlanetVote.appendChild(newPlanetVoteButton)
                     planetsNewTableRow.appendChild(newPlanetVote)
+                    document.getElementById('planets-table').removeAttribute('hidden')
+
                 }
             }
         )
