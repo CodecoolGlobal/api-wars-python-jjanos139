@@ -8,8 +8,7 @@ def get_connection_string():
     password = os.environ.get('PSQL_PASSWORD')
     host = os.environ.get('PSQL_HOST')
     database_name = os.environ.get('PSQL_DB_NAME')
-    connection_string = os.environ.get('DATABASE_URL')
-    connection = psycopg2.connect(connection_string)
+
     env_variables_defined = user_name and password and host and database_name
 
     if env_variables_defined:
@@ -26,7 +25,7 @@ def get_connection_string():
 
 def open_database():
     try:
-        connection_string = get_connection_string()
+        connection_string = os.environ.get('DATABASE_URL')
         connection = psycopg2.connect(connection_string)
         connection.autocommit = True
     except psycopg2.DatabaseError as exception:
