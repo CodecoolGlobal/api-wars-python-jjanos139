@@ -12,7 +12,7 @@ def verify_password(plain_text_password, hashed_password):
     return bcrypt.checkpw(plain_text_password.encode('utf-8'), hashed_bytes_password)
 
 
-@connection.connection
+@connection.connection_handler
 def get_users(cursor):
     query = f"""
     SELECT * FROM api_users"""
@@ -20,7 +20,7 @@ def get_users(cursor):
     return cursor.fetchall()
 
 
-@connection.connection
+@connection.connection_handler
 def get_password(cursor, username):
     query = f"""
         SELECT password FROM api_users
@@ -30,7 +30,7 @@ def get_password(cursor, username):
     return cursor.fetchone()
 
 
-@connection.connection
+@connection.connection_handler
 def add_user(cursor, username, password):
     query = f"""
     INSERT INTO api_users (username, password)
