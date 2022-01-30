@@ -2,7 +2,7 @@ import os
 import psycopg2
 import psycopg2.extras
 
-DATABASE_URL = os.environ['SQLALCHEMY_DATABASE_URI']
+DATABASE_URL = "postgres://cvajuhmapdhtor:fa5a82f16290a2782e4bc6e515812f116dc0733bde5f2f7ff7af92f76a10266b@ec2-54-228-95-1.eu-west-1.compute.amazonaws.com:5432/d75tg1j7gq6pqe"
 
 #
 # def get_connection_string():
