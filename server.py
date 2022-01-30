@@ -3,6 +3,7 @@ import data_manager
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://cvajuhmapdhtor:fa5a82f16290a2782e4bc6e515812f116dc0733bde5f2f7ff7af92f76a10266b@ec2-54-228-95-1.eu-west-1.compute.amazonaws.com:5432/d75tg1j7gq6pqe"
 
 
 @app.route('/')
