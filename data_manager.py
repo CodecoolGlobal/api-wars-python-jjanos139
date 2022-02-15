@@ -70,8 +70,9 @@ def save_vote(cursor, planet_id, planet_name, user_id, time):
 @connection.connection_handler
 def get_all_votes(cursor):
     query = """
-    SELECT planet_name, COUNT(planet_name) FROM planet_votes
+    SELECT planet_name, COUNT(planet_name) AS count FROM planet_votes
     GROUP BY planet_name
+    ORDER BY count DESC
     """
     cursor.execute(query)
     return cursor.fetchall()
