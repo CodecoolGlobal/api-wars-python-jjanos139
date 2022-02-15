@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta name="viewport" charset="UTF-8" content="width=device-width, initial-scale=1">
-    <title>Title</title>
+    <title>API Wars</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
@@ -36,7 +36,8 @@
                 {% endif %}
             </ul>
             {% if session['username'] %}
-            <h6 style="color: white; background-color: midnightblue">Signed in as <span style="color: darkorange;">{{ session['username'] }}</span>
+            <h6 style="color: white; background-color: midnightblue" data-user-id="{{ session['username'] }}">Signed in
+                as <span style="color: darkorange;">{{ session['username'] }}</span>
             </h6>
             {% endif %}
         </div>
@@ -139,6 +140,7 @@
 
     initFetch()
 
+
     // loading image sequence after previous/next button press
     function loadingImage() {
         document.getElementById('planet-body').innerHTML = ''
@@ -178,7 +180,7 @@
     }
 
     // data insert after fetching data from API
-    function initFetch() {
+    async function initFetch() {
         fetchPlanetRepository().then((responseData) => {
                 document.getElementById('loading-planets').setAttribute('hidden', 'hidden')
                 let peopleResponseData = responseData.results
@@ -226,6 +228,7 @@
                     newPlanetResidentsButton.setAttribute('type', 'button')
                     newPlanetResidentsButton.classList.add('btn')
                     newPlanetResidentsButton.classList.add('btn-outline-info')
+                    newPlanetResidentsButton.classList.add('votebutton')
                     newPlanetResidentsButton.setAttribute('data-toggle', 'modal')
                     newPlanetResidentsButton.setAttribute('data-target', '#exampleModal')
                     newPlanetResidentsButton.setAttribute('data-residents', JSON.stringify(peopleResponseData[i].residents))
@@ -286,6 +289,9 @@
                     newPlanetVoteButton.setAttribute('type', 'button')
                     newPlanetVoteButton.classList.add('btn')
                     newPlanetVoteButton.classList.add('btn-outline-info')
+                    newPlanetVoteButton.classList.add('vote-button')
+                    newPlanetVoteButton.setAttribute('data-planet-id', JSON.stringify(((pageNumber) * 10) + i + 1))
+                    newPlanetVoteButton.setAttribute('data-planet-name', JSON.stringify(peopleResponseData[i].name))
                     newPlanetVoteButton.innerHTML = 'Vote'
                     // fill table with all newly created data
                     planetsNewTableRow.appendChild(newPlanetName)
@@ -303,8 +309,39 @@
                 document.getElementById('previous-button').removeAttribute('hidden')
                 document.getElementById('next-button').removeAttribute('hidden')
                 document.getElementById('planets-table').removeAttribute('hidden')
+                voteOnPlanets()
             }
         )
+    }
+
+    async function voteOnPlanets() {
+        let voteButtons = document.querySelectorAll('.vote-button')
+        for (let voteButton of voteButtons) {
+            let planetId = voteButton.dataset.planetId
+            let planetName = voteButton.dataset.planetName.replaceAll('"', '')
+            voteButton.addEventListener('click', function () {
+                saveVoteOnPlanets(planetId, planetName)
+            })
+        }
+    }
+
+
+    async function saveVoteOnPlanets(planetId, planetName) {
+        let data = {'planet_id': planetId, 'planet_name': planetName};
+        fetch('/save-new-votes/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => response.json())
+            // .then(data => {
+            //
+            // })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }
 </script>
 </body>

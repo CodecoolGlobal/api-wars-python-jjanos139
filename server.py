@@ -1,9 +1,10 @@
-from flask import Flask, session, redirect, url_for, escape, request, render_template, flash
+from datetime import datetime
+
+from flask import Flask, session, redirect, url_for, escape, request, render_template, flash, jsonify
 import data_manager
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://cvajuhmapdhtor:fa5a82f16290a2782e4bc6e515812f116dc0733bde5f2f7ff7af92f76a10266b@ec2-54-228-95-1.eu-west-1.compute.amazonaws.com:5432/d75tg1j7gq6pqe"
 
 
 @app.route('/')
@@ -56,10 +57,22 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('main'))
 
-#
-# if __name__ == '__main__':
-#     app.run(
-#         host='0.0.0.0',
-#         port=5000,
-#         debug=True,
-#     )
+
+@app.route('/save-new-votes/', methods=['POST', 'GET'])
+def save_new_votes():
+    data = request.get_json()
+    planet_id = data['planet_id']
+    planet_name = str(data['planet_name'])
+    username = session['username']
+    time = datetime.now()
+    user_id = str(data_manager.get_user_id(username)['id'])
+    data_manager.save_vote(planet_id, planet_name, user_id, time)
+    return 'Added'
+
+
+if __name__ == '__main__':
+    app.run(
+        host='0.0.0.0',
+        port=5000,
+        debug=True,
+    )
