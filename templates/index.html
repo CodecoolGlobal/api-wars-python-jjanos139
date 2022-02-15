@@ -15,9 +15,9 @@
                     <a class="nav-link active" aria-current="page" href="/">Planet List</a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link active" aria-current="page" id="voting-statistics"
-                            data-bs-toggle="modal" data-bs-target="#votes-modal-title">Voting Statistics
-                    </button>
+                    <a class="nav-link active" aria-current="page" id="voting-statistics"
+                       data-bs-toggle="modal" data-bs-target="#votes-modal-title">Voting Statistics
+                    </a>
                 </li>
                 {% if not session['username'] %}
                 <li class="nav-item">
@@ -116,8 +116,10 @@
     <div class="modal-dialog">
         <div class="modal-content" style="min-width: 300px">
             <div class="modal-header">
-                <h5 class="modal-title" style="display: inline; text-align: center; margin-right: auto; margin-left: auto" id="votes-label">Total Votes on Planets</h5>
-                <button type="button" id="close-votes" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                <h5 class="modal-title"
+                    style="display: inline; text-align: center; margin-right: auto; margin-left: auto" id="votes-label">
+                    Total Votes on Planets</h5>
+                <button type="button" class="close-votes" data-bs-dismiss="modal" aria-label="Close">&times;</button>
             </div>
             <div class="voting-body">
                 <table class="table">
@@ -129,6 +131,9 @@
                     </thead>
                     <tbody class="votes-list"></tbody>
                 </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="close-votes btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -377,7 +382,7 @@
         let votingStatisticsButton = document.querySelector('#voting-statistics')
         let votesModal = document.querySelector('#votes-modal-main')
         let votesContainer = document.querySelector('.votes-list')
-        let closeVotesModal = document.querySelector('#close-votes')
+        let closeVotesModal = document.querySelectorAll('.close-votes')
         votingStatisticsButton.addEventListener('click', async function () {
             const votingData = await getVotes()
             votesContainer.innerHTML = ''
@@ -389,9 +394,9 @@
                 votesContainer.insertAdjacentHTML('beforeend', content)
             }
             votesModal.style = "display: block;"
-            closeVotesModal.addEventListener('click', function () {
+            closeVotesModal.forEach(addEventListener('click', function () {
                 votesModal.style = "display: none;"
-            })
+            }))
         })
     }
 </script>
