@@ -69,6 +69,11 @@ def save_new_votes():
     return 'Added'
 
 
+@app.route('/get-votes/')
+def get_votes():
+    return jsonify(data_manager.get_all_votes())
+
+
 if __name__ == '__main__':
     app.run(
         host='0.0.0.0',

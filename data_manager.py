@@ -65,3 +65,13 @@ def save_vote(cursor, planet_id, planet_name, user_id, time):
                 user_id=sql.Literal(user_id), time=sql.Literal(time))
     cursor.execute(query)
     return cursor.fetchall()
+
+
+@connection.connection_handler
+def get_all_votes(cursor):
+    query = """
+    SELECT planet_name, COUNT(planet_name) FROM planet_votes
+    GROUP BY planet_name
+    """
+    cursor.execute(query)
+    return cursor.fetchall()

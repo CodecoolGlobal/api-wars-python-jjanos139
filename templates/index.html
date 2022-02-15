@@ -15,7 +15,9 @@
                     <a class="nav-link active" aria-current="page" href="/">Planet List</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Voting Statistics</a>
+                    <button class="nav-link active" aria-current="page" id="voting-statistics"
+                            data-bs-toggle="modal" data-bs-target="#votes-modal-title">Voting Statistics
+                    </button>
                 </li>
                 {% if not session['username'] %}
                 <li class="nav-item">
@@ -105,6 +107,28 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade show" id="votes-modal-main" tabindex="-1" role="dialog" aria-labelledby="votes-label"
+     aria-hidden="true" style="padding-right: 0.200073px;">
+    <div class="modal-dialog">
+        <div class="modal-content" style="min-width: 300px">
+            <div class="modal-header">
+                <h5 class="modal-title" style="display: inline; text-align: center; margin-right: auto; margin-left: auto" id="votes-label">Total Votes on Planets</h5>
+                <button type="button" id="close-votes" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="voting-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Planet name</th>
+                        <th>Total votes</th>
+                    </tr>
+                    </thead>
+                    <tbody class="votes-list"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -228,7 +252,6 @@
                     newPlanetResidentsButton.setAttribute('type', 'button')
                     newPlanetResidentsButton.classList.add('btn')
                     newPlanetResidentsButton.classList.add('btn-outline-info')
-                    newPlanetResidentsButton.classList.add('votebutton')
                     newPlanetResidentsButton.setAttribute('data-toggle', 'modal')
                     newPlanetResidentsButton.setAttribute('data-target', '#exampleModal')
                     newPlanetResidentsButton.setAttribute('data-residents', JSON.stringify(peopleResponseData[i].residents))
@@ -310,6 +333,7 @@
                 document.getElementById('next-button').removeAttribute('hidden')
                 document.getElementById('planets-table').removeAttribute('hidden')
                 voteOnPlanets()
+                    .then(votingStatistics)
             }
         )
     }
@@ -321,6 +345,7 @@
             let planetName = voteButton.dataset.planetName.replaceAll('"', '')
             voteButton.addEventListener('click', function () {
                 saveVoteOnPlanets(planetId, planetName)
+                alert('Voted on planet ' + planetName + ' successfully')
             })
         }
     }
@@ -336,12 +361,38 @@
             body: JSON.stringify(data),
         })
             .then(response => response.json())
-            // .then(data => {
-            //
-            // })
             .catch((error) => {
-                console.error('Error:', error);
+                console.error('There was an error during voting on planet ' + planetName, error);
             });
+    }
+
+
+    async function getVotes() {
+        const response = await fetch('/get-votes/')
+        return await response.json();
+    }
+
+
+    function votingStatistics() {
+        let votingStatisticsButton = document.querySelector('#voting-statistics')
+        let votesModal = document.querySelector('#votes-modal-main')
+        let votesContainer = document.querySelector('.votes-list')
+        let closeVotesModal = document.querySelector('#close-votes')
+        votingStatisticsButton.addEventListener('click', async function () {
+            const votingData = await getVotes()
+            votesContainer.innerHTML = ''
+            for (let vote of votingData) {
+                let content = `<tr>
+                                    <td>${vote.planet_name}</td>
+                                    <td>${vote.count}</td>
+                                </tr>`
+                votesContainer.insertAdjacentHTML('beforeend', content)
+            }
+            votesModal.style = "display: block;"
+            closeVotesModal.addEventListener('click', function () {
+                votesModal.style = "display: none;"
+            })
+        })
     }
 </script>
 </body>
