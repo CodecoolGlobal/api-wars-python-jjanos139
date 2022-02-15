@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from flask import Flask, session, redirect, url_for, escape, request, render_template, flash, jsonify
 import data_manager
 
